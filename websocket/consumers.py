@@ -1,3 +1,4 @@
+
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 
@@ -7,63 +8,46 @@ class WebSocketConsumer(AsyncJsonWebsocketConsumer):
 
         self.user = self.scope["user"]
 
-        # Authentication check
         if not self.user.is_authenticated:
             await self.close(code=4001)
             return
 
-        # Accept connection
+        self.group_name = f"user_{self.user.id}"
+
+        await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name
+        )
+
         await self.accept()
 
-        # Send connection response
         await self.send_json({
             "type": "connection",
             "status": "connected",
-            "message": "WebSocket connection established",
         })
 
+    async def disconnect(self, close_code):
+
+        if hasattr(self, "group_name"):
+            await self.channel_layer.group_discard(
+                self.group_name,
+                self.channel_name
+            )
 
     async def receive_json(self, content, **kwargs):
 
-        # Validate JSON structure
         if not isinstance(content, dict):
-
             await self.send_json({
                 "type": "error",
                 "message": "Invalid message format",
             })
-
             return
 
-        message_type = content.get("type")
-
-        # Validate message type
-        if not isinstance(message_type, str):
-
-            await self.send_json({
-                "type": "error",
-                "message": "Message type is required",
-            })
-
-            return
-
-        # Ping request
-        if message_type == "ping":
-
+        if content.get("type") == "ping":
             await self.send_json({
                 "type": "pong",
             })
 
-            return
+    async def send_event(self, event):
 
-        # Generic echo response
-        await self.send_json({
-            "type": "message",
-            "data": content,
-        })
-
-
-    async def disconnect(self, close_code):
-
-        # Connection cleanup
-        pass
+        await self.send_json(event["data"])

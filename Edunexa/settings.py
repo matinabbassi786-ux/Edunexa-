@@ -35,9 +35,9 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
         "daphne",
-"channels",
-
+    "channels",
     "websocket",
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,14 +61,9 @@ ASGI_APPLICATION = "Edunexa.asgi.application"
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-
         "CONFIG": {
-            "hosts": [
-                ("127.0.0.1", 6379),
-            ],
-
+            "hosts": [("127.0.0.1", 6379)],
             "capacity": 1000,
-
             "expiry": 60,
         },
     },
@@ -149,4 +144,16 @@ MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
+}
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "TIMEOUT": 300,
+        "OPTIONS": {
+            "db": "1",
+        },
+    }
 }
