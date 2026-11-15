@@ -31,12 +31,15 @@ ALLOWED_HOSTS = [
 ]
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
         "daphne",
     "channels",
     "websocket",
+    'zstd_engine',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,6 +53,13 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+     'zstd_engine.middleware.ZstandardMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -157,3 +167,32 @@ CACHES = {
         },
     }
 }
+
+# ==========================================
+# EDUNEXA ZSTANDARD CONFIGURATION
+# ==========================================
+
+# ==========================================
+# Zstandard Compression & Engine Settings
+# ==========================================
+
+# Master switch to enable or disable the Zstandard middleware entirely
+ZSTD_ENABLED = True
+
+# Enable or disable incoming request decompression
+ZSTD_REQUEST_ENABLED = True
+
+# Enable or disable outgoing response compression
+ZSTD_RESPONSE_ENABLED = True
+
+# Default compression level (1-22). Level 3 is the sweet spot for speed and ratio.
+ZSTD_COMPRESSION_LEVEL = 22
+
+# Minimum response size in bytes before compression kicks in (default: 1KB)
+ZSTD_MINIMUM_SIZE = 1024
+
+# Maximum allowed compressed request size in bytes (default: 50MB)
+ZSTD_MAX_REQUEST_SIZE = 50 * 1024 * 1024
+
+# Maximum allowed decompressed size to prevent memory exhaustion/zip bombs (default: 100MB)
+ZSTD_MAX_DECOMPRESSED_SIZE = 100 * 1024 * 1024
