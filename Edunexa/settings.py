@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "channels",
     "websocket",
     'zstd_engine',
+     "django_celery_beat",
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,6 +49,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/1"
+
+CELERY_TIMEZONE = "Asia/Kolkata"
+
+CELERY_ENABLE_UTC = True
+
+CELERY_TASK_TRACK_STARTED = True
+
+CELERY_TASK_TIME_LIMIT = 300
+
+CELERY_BEAT_SCHEDULER = (
+    "django_celery_beat.schedulers:DatabaseScheduler"
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

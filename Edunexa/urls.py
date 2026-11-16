@@ -16,8 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.http import HttpResponse
+from tasks import test_task
+
+
+def test(request):
+    result = test_task.delay()
+    return HttpResponse(f"Task ID: {result.id}")
+
 
 urlpatterns = [
+    path('', test, name='test'),
     path('admin/', admin.site.urls),
 ]
 

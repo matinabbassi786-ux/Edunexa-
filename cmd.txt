@@ -1,0 +1,16 @@
+Terminal 0
+WebSocket Run
+daphne -b 127.0.0.1 -p 8000 Edunexa.asgi:application
+
+Terminal 1 — Redis
+redis-server
+
+Terminal 2 — Celery Worker
+celery -A Edunexa worker -l info
+
+Terminal 3 — Celery Beat
+celery -A Edunexa beat -l info \
+  --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+Terminal 4 — Django
+python manage.py runserver 8001
