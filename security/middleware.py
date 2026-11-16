@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect
 from .models import userhistory
 from django.urls import resolve, Resolver404
 import requests
+import random
+import string
 
 
 def check_url_status(url_path):
@@ -11,7 +13,10 @@ def check_url_status(url_path):
     except Resolver404:
         return False
 
-    
+
+def generate_code():
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choices(characters, k=500))
 
 
 class SecurityMiddleware:
@@ -19,16 +24,31 @@ class SecurityMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        
+
+        # 1. Handle user history for authenticated users
         if request.user.is_authenticated:
-            userhistorydb = userhistory.objects.create()
-            userhistorydb.user_names = request.user
-            userhistorydb.Path = request.build_absolute_uri()
-            userhistorydb.method = request.method
-            userhistorydb.found = check_url_status(request.path)
-            userhistorydb.save()
+            userhistory.objects.create(
+                user_names=request.user,
+                Path=request.build_absolute_uri(),
+                method=request.method,
+                found=check_url_status(request.path)
+            )
 
-
+        # 2. Get the response ONCE
         response = self.get_response(request)
+
+        # 3. Handle unauthenticated visitor cookies
+        if not request.user.is_authenticated:
+            if not request.COOKIES.get("tapmuser"):
+                response.set_cookie(
+                    key='tapmuser',
+                    value=generate_code(),
+                    max_age=30 * 24 * 60 * 60
+                )
+        
+        tapmuser = request.COOKIES.get('tapmuser')
+        
+        if request.user.is_authenticated == False:
+            userhistory.objects.create(User_Code = tapmuser,Path=request.build_absolute_uri(),method=request.method,found=check_url_status(request.path))
 
         return response

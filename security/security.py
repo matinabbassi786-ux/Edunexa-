@@ -1,9 +1,8 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import redirect
 
 
 def user_authentication(request):
     try:
-
         if request.user.is_authenticated == False:
             return redirect("/login/")
         else: return False

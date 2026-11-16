@@ -24,8 +24,8 @@ from django.urls import include, path
 
 
 def test(request):
-    result = test_task.delay()
-    return HttpResponse(f"Task ID: {result.id}")
+    test_task.delay("Some Name")
+    return HttpResponse(f"Task ID: ")
 
 
 urlpatterns = [
