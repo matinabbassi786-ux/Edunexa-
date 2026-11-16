@@ -1,20 +1,18 @@
 
+import os
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-print("--- EDUNEXA DECRYPTION ---")
-
-# Enter values printed by file1.py
 key = base64.b64decode(input("Enter KEY: "))
-nonce = base64.b64decode(input("Enter NONCE: "))
-encrypted = base64.b64decode(input("Enter ENCRYPTED DATA: "))
+text = input("Enter message: ")
 
-try:
-    original = AESGCM(key).decrypt(nonce, encrypted, None)
+nonce = os.urandom(12)
 
-    print("\nDecryption successful!")
-    print("Original message:", original.decode("utf-8"))
+encrypted = AESGCM(key).encrypt(
+    nonce, text.encode(), None
+)
 
-except Exception as error:
-    print("\nDecryption failed!")
-    print("Reason:", error)
+# Include nonce internally with encrypted data
+result = nonce + encrypted
+
+print("ENCRYPTED:", base64.b64encode(result).decode())

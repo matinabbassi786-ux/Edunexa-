@@ -9,6 +9,6 @@ class userhistory(models.Model):
     Path = models.TextField()
     method = models.CharField(max_length=50,null=True,blank=True)
     found = models.BooleanField(default=False)
-    Date = models.DateField(auto_now_add=True)
+    Date = models.DateTimeField(auto_now_add=True)
 
     

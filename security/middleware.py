@@ -34,10 +34,10 @@ class SecurityMiddleware:
                 found=check_url_status(request.path)
             )
 
-        # 2. Get the response ONCE
+        
         response = self.get_response(request)
 
-        # 3. Handle unauthenticated visitor cookies
+        
         if not request.user.is_authenticated:
             if not request.COOKIES.get("tapmuser"):
                 response.set_cookie(
@@ -49,6 +49,10 @@ class SecurityMiddleware:
         tapmuser = request.COOKIES.get('tapmuser')
         
         if request.user.is_authenticated == False:
-            userhistory.objects.create(User_Code = tapmuser,Path=request.build_absolute_uri(),method=request.method,found=check_url_status(request.path))
+            userhistory.objects.create(
+                User_Code = tapmuser,
+                Path=request.build_absolute_uri(),
+                method=request.method,
+                found=check_url_status(request.path))
 
         return response
