@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,12 +36,14 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-        "daphne",
+    "rest_framework",
+    "daphne",
     "channels",
     "websocket",
     'zstd_engine',
-     "django_celery_beat",
+    "django_celery_beat",
     "API",
+    "security",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -81,6 +83,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # SecurityMiddleware
+    'security.middleware.SecurityMiddleware',
+ 
 ]
 # websocket
 ASGI_APPLICATION = "Edunexa.asgi.application"
@@ -101,7 +106,9 @@ ROOT_URLCONF = 'Edunexa.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+        os.path.join(BASE_DIR ,"Templatess")
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
