@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "websocket",
     'zstd_engine',
      "django_celery_beat",
-
+    "API",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
