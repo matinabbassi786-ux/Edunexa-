@@ -1,15 +1,15 @@
 from django.shortcuts import render,redirect
-from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from security.security  import user_authentication
 
-
-class Index(APIView):
-    def get(self, request, format=None):
-        Data = {
-            "Names":"Pass db"
-        }
-        return Response(Data)
-    def post(self, request):
-        usernames = request.data.get("usernames", [])
-        return Response({"message": f"POST received from {usernames}"})
-
+@api_view(['GET', 'POST'])
+def Index(request):
+    
+    if user_authentication(request) != False: return user_authentication(request)
+    
+    Data = {
+        "messenge":"Wlecome to Edunexa "
+    }
+    return Response(Data)
+  
