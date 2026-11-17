@@ -302,7 +302,6 @@ Understand how three different systems cooperate within a Django application:
 2. **Celery Beat:** Schedules tasks for execution.
 3. **Redis:** Provides message-broker and caching functionality.
 
-# 5. Security Middleware and Visitor History
 
 # 5. Security Middleware and Visitor History
 
