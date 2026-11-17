@@ -12,6 +12,30 @@
 # 1. The Real Goal
 The goal of Edunexa is to explore new concepts, understand how they work, investigate their underlying principles, and apply that knowledge through practical experiments.
 
+# WebSocket — Real-Time Communication
+
+### 6.1 Purpose
+
+WebSocket is a communication protocol that allows a client and server to maintain a persistent, two-way connection.
+
+Unlike traditional HTTP request-response communication, WebSocket allows both sides to send messages through an established connection without creating a new HTTP request for every message.
+
+The purpose of studying WebSocket in Edunexa is to understand real-time communication, asynchronous processing, connection management and event-driven architecture.
+
+
+### 6.2 Technologies and Libraries
+
+| Technology / Library | Purpose |
+|---|---|
+| WebSocket | Two-way communication between client and server |
+| Django Channels | Adds asynchronous and WebSocket capabilities to Django |
+| ASGI | Asynchronous server interface used by Django applications |
+| Daphne | ASGI server that handles WebSocket connections |
+| Redis | Supports communication between channel layers |
+| channels_redis | Redis-backed channel layer for Django Channels |
+
+
+
 #  Python Libraries and Dependencies
 
 
