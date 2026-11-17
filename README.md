@@ -19,11 +19,11 @@ source /home/matin/Desktop/Edunexa-/venv/bin/activate
 
 | Service | Command |
 |---|---|
-| WebSocket — Daphne | `daphne -b 127.0.0.1 -p 8000 Edunexa.asgi:application` |
-| Redis | `redis-server` |
-| Celery Worker | `celery -A Edunexa worker -l info` |
-| Celery Beat | `celery -A Edunexa beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler` |
-| Django | `python manage.py runserver 8001` |
+| WebSocket — Daphne | ```daphne -b 127.0.0.1 -p 8000 Edunexa.asgi:application``` |
+| Redis | ```redis-server``` |
+| Celery Worker | ```celery -A Edunexa worker -l info``` |
+| Celery Beat | ```celery -A Edunexa beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler``` |
+| Django | ```python manage.py runserver 8001``` |
 
 
 # 1. The Real Goal
