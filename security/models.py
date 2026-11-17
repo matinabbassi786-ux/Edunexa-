@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class userhistory(models.Model):
     user_names = models.ForeignKey(User,on_delete=models.CASCADE,related_name="UserNames",null=True,blank=True)
@@ -20,8 +19,11 @@ class userhistory(models.Model):
         return str(self.id)
 
 class Wronging(models.Model):
+    
     Wronging_link = models.ForeignKey(userhistory,on_delete=models.CASCADE)
-    Wronging = models.BooleanField(default=False)
+    Wronging = models.SmallIntegerField(validators=[MinValueValidator(-10), MaxValueValidator(10)])
     Wronging_Type = models.CharField(max_length=255)
     Date = models.DateTimeField(auto_now_add=True)
     
+    def __str__(self):
+        return str(self.id)
