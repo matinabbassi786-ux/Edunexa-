@@ -35,6 +35,174 @@ The purpose of studying WebSocket in Edunexa is to understand real-time communic
 | channels_redis | Redis-backed channel layer for Django Channels |
 
 
+## 3. Zstandard — Data Compression and Performance Engineering
+
+### 3.1 Purpose
+
+Zstandard (Zstd) is a data compression algorithm designed to reduce data size while providing fast compression and decompression.
+
+The purpose of studying Zstandard in Edunexa is to understand how compression algorithms work, how compression levels affect output size and processing time, and how compression influences application performance and resource consumption.
+
+The investigation focuses on the relationship between:
+
+- Original data size.
+- Compressed data size.
+- Compression level.
+- Compression time.
+- Decompression time.
+- CPU consumption.
+- Memory usage.
+- Network data transfer.
+
+### 3.2 Technology and Libraries
+
+| Technology / Library | Purpose |
+|---|---|
+| Zstandard | Data compression algorithm |
+| zstandard | Python implementation and interface for Zstandard |
+| Django | Integration with HTTP request and response processing |
+| Middleware | Centralized compression and decompression handling |
+| Python | Experimentation, implementation and measurement |
+
+### 3.3 Compression Concepts Being Studied
+
+1. Lossless data compression.
+2. Compression and decompression.
+3. Compression levels and their trade-offs.
+4. Compression ratios.
+5. CPU processing cost.
+6. Memory consumption.
+7. Streaming compression.
+8. Request decompression.
+9. Response compression.
+10. HTTP content negotiation.
+11. Compressed data storage.
+12. Maximum compressed and decompressed size limits.
+
+### 3.4 Historical Compression Benchmark — Nexora
+
+An earlier experiment was conducted in the historical Nexora project to compare Zstandard compression levels 3, 11 and 22.
+
+These measurements are historical experimental evidence, not a benchmark of the current Edunexa implementation.
+
+#### Compressed Output Size
+
+| Page | Original Size | Level 3 | Level 11 | Level 22 |
+|---|---:|---:|---:|---:|
+| Homepage | 840,000 B | 136 B | 136 B | 130 B |
+| Admin | 21,819 B | 3,129 B | 2,885 B | 2,796 B |
+| Admin Home | 12,650 B | 2,391 B | 2,286 B | 2,227 B |
+| Admin Login | 4,084 B | 1,578 B | 1,523 B | 1,497 B |
+
+#### CPU Processing Time
+
+| Page | Level 11 | Level 22 |
+|---|---:|---:|
+| Homepage | 5.538 ms | 6.615 ms |
+| Admin | 0.529 ms | 11.939 ms |
+| Admin Home | 0.698 ms | 6.598 ms |
+| Admin Login | 0.674 ms | 0.919 ms |
+
+Level 3 CPU measurements were not recorded in this benchmark.
+
+#### Comparison: Level 22 vs Level 11
+
+| Page | CPU Time Difference |
+|---|---:|
+| Homepage | 1.19× |
+| Admin | 22.57× |
+| Admin Home | 9.45× |
+| Admin Login | 1.36× |
+
+### 3.5 Experimental Observations
+
+The measurements showed that:
+
+- Higher compression levels produced smaller output files.
+- The additional reduction from Level 11 to Level 22 was relatively small.
+- Level 22 required substantially more CPU time on some pages.
+- Compression behaviour differed between pages.
+- The homepage produced unusually high compression, suggesting highly repetitive or compressible content.
+
+The experiment demonstrated that the smallest compressed output does not necessarily provide the best overall performance.
+
+A compression configuration must consider both data reduction and processing cost.
+
+### 3.6 Limitations of the Historical Benchmark
+
+The benchmark had several limitations:
+
+- CPU measurements were individual measurements.
+- Memory consumption was not sufficiently evaluated.
+- Actual internet transfer performance was not measured.
+- Concurrent user behaviour was not tested.
+- Streaming compression was not included in the historical middleware.
+- Level 3 CPU measurements were unavailable.
+- The unusually compressible homepage should not be treated as representative of every type of content.
+
+Therefore, the historical results are useful for understanding the trade-offs but are not sufficient to establish a universal optimal compression level.
+
+### 3.7 Current Edunexa Implementation
+
+The current Edunexa project contains a more extensive Zstandard compression implementation.
+
+| Component | Current Implementation |
+|---|---|
+| Zstandard Engine | Compression and decompression functionality |
+| Request Decompression | Handles compressed incoming request data |
+| Response Compression | Compresses outgoing HTTP responses |
+| Streaming Compression | Supports streaming response compression |
+| Content Negotiation | Handles client compression support |
+| Size Limits | Restricts incoming and decompressed data sizes |
+| Zstandard Storage | Custom `ZstandardStorage` implementation |
+| Temporary Files | Handles temporary-file operations |
+
+#### Current Configuration
+
+| Setting | Value |
+|---|---:|
+| Compression Level | 22 |
+| Minimum Compression Size | 1,024 bytes |
+| Maximum Request Size | 50 MB |
+| Maximum Decompressed Size | 100 MB |
+
+### 3.8 Testing and Verification
+
+Tests have been written for the following areas:
+
+- Compression and decompression round trips.
+- Request size limits.
+- Content negotiation.
+- Request compression.
+- Response compression.
+- Streaming compression.
+- Custom storage.
+- Temporary-file handling.
+
+**Testing status:** Tests are written. Their successful execution and results must be recorded separately; writing a test does not establish that it passed.
+
+### 3.9 Further Learning
+
+Future investigations can compare:
+
+1. Zstandard with Brotli and gzip.
+2. Different compression levels.
+3. Compression speed and decompression speed.
+4. CPU and RAM consumption.
+5. Small files versus large files.
+6. Text, JSON, HTML and binary data.
+7. Streaming versus non-streaming compression.
+8. Single requests versus concurrent requests.
+9. Compression overhead versus network transfer savings.
+10. Different compression settings under realistic workloads.
+
+### 3.10 Expected Learning Outcome
+
+Understand how lossless compression works, how compression algorithms trade processing resources for data reduction, and how compression can be integrated into a web application.
+
+The broader objective is to develop performance-engineering knowledge by measuring actual behaviour rather than selecting configurations based only on theoretical compression ratios.
+
+
 
 #  Python Libraries and Dependencies
 
