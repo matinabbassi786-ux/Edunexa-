@@ -466,36 +466,7 @@ The current implementation follows this sequence:
 7. Create an anonymous request-history record using the incoming cookie value.
 8. Return the response.
 
-## 5.8 Security Data and Administrative Review
 
-The request-history records collected by the middleware serve two purposes within Edunexa's security architecture:
-
-**1. Security analysis and investigation**
-
-The collected request data provides information that can be used by the security system to analyze application activity, investigate unusual request patterns and support security-related decisions.
-
-The `userhistory` model maintains information such as user identity, anonymous identifier, request path, HTTP method, URL-resolution status and timestamp.
-
-This data forms part of the security system's activity-history foundation.
-
-**2. Administrative review**
-
-The `security/admin.py` file registers the `userhistory` model with Django Admin.
-
-Administrators can inspect the collected request-history records through the administrative interface.
-
-The current list display includes:
-
-- Record ID.
-- User account.
-- Request path.
-- Date.
-- HTTP method.
-- URL-resolution status.
-
-The administrative interface provides human visibility into the same request-history data that can support security analysis.
-
-**Important distinction:** Django Admin currently provides record inspection. The middleware itself collects the data. Any automated security analysis or decision-making using these records must be documented according to its actual implementation.
 
 
 #  Python Libraries and Dependencies
