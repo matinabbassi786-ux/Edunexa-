@@ -302,6 +302,156 @@ Understand how three different systems cooperate within a Django application:
 2. **Celery Beat:** Schedules tasks for execution.
 3. **Redis:** Provides message-broker and caching functionality.
 
+# 5. Centralized Security Middleware — Request Monitoring and History
+
+## 5.1 Overview
+
+Edunexa implements a custom Django middleware named `SecurityMiddleware`, located in:
+
+`security/middleware.py`
+
+This middleware is part of the Edunexa security system. Its primary responsibility is to monitor incoming website requests and maintain request-history records for both authenticated and unauthenticated users.
+
+The middleware provides a centralized point for collecting request activity throughout the application.
+
+Its current responsibilities include:
+
+1. Monitoring incoming requests.
+2. Identifying authenticated and unauthenticated users.
+3. Recording request history.
+4. Associating requests with user accounts or anonymous identifiers.
+5. Checking whether requested URL paths can be resolved by Django.
+6. Storing request information for later review.
+
+## 5.2 Central Request Monitoring
+
+The middleware processes requests through Django's middleware lifecycle.
+
+It checks the authentication status of each request and records the corresponding activity in the `userhistory` database model.
+
+There are two identification paths:
+
+| Request identity | Identification method | History association |
+|---|---|---|
+| Authenticated user | Django authentication system | User account |
+| Unauthenticated user | `tapmuser` cookie | Anonymous user code |
+
+Both paths contribute to the same request-history system.
+
+The objective is to maintain a record of application activity rather than monitor only anonymous visitors.
+
+## 5.3 Request History Data Structure
+
+The `userhistory` model is defined in `security/models.py`.
+
+It stores the following information:
+
+| Field | Type | Purpose |
+|---|---|---|
+| `user_names` | ForeignKey to Django User | Associates a request with an authenticated account |
+| `User_Code` | TextField | Stores an anonymous identifier |
+| `Path` | TextField | Stores the absolute request URL |
+| `method` | CharField | Stores the HTTP request method |
+| `found` | BooleanField | Stores the URL-resolution result |
+| `Date` | DateTimeField | Automatically records the creation time |
+
+Both `user_names` and `User_Code` allow null values.
+
+This model supports two identification methods within one request-history structure.
+
+## 5.4 Authenticated Request Monitoring
+
+When Django identifies a request as authenticated, the middleware records the request against the authenticated user.
+
+The following information is stored:
+
+- User account.
+- Absolute request URL.
+- HTTP method.
+- URL-resolution status.
+- Record creation timestamp.
+
+The record is created before the middleware calls `self.get_response(request)`.
+
+This means the request history is recorded before the downstream response processing finishes.
+
+## 5.5 Unauthenticated Request Monitoring
+
+When Django identifies a request as unauthenticated, the middleware uses a cookie named `tapmuser` to associate requests with an anonymous identifier.
+
+If the incoming request does not contain this cookie, the middleware generates a new identifier and adds it to the outgoing response.
+
+The current identifier-generation function:
+
+- Uses uppercase and lowercase letters.
+- Uses digits.
+- Uses punctuation characters.
+- Generates a string with a length of 500 characters.
+- Uses a 30-day cookie lifetime.
+
+The middleware then creates a request-history record using the incoming request's cookie value.
+
+The anonymous identification mechanism is only one part of the broader request-monitoring system.
+
+## 5.6 URL Resolution Monitoring
+
+The middleware defines `check_url_status(url_path)`.
+
+It uses Django's `resolve()` function to check whether a requested path matches a configured URL pattern.
+
+The result is stored in the `found` field.
+
+- `True`: Django successfully resolves the URL path.
+- `False`: Django raises `Resolver404`.
+
+This provides information about requests to paths that do not match the application's URL configuration.
+
+This check does not establish whether a user has permission to access a resource or whether the final HTTP response is successful.
+
+## 5.7 Middleware Execution Flow
+
+The current implementation follows this sequence:
+
+1. Receive an incoming request.
+2. Check whether the user is authenticated.
+3. If authenticated, create a request-history record associated with the user account.
+4. Pass the request to the next response handler.
+5. If unauthenticated, check whether the incoming request contains `tapmuser`.
+6. If the cookie is missing, generate an identifier and attach it to the outgoing response.
+7. Create an anonymous request-history record using the incoming cookie value.
+8. Return the response.
+
+## 5.8 Security Data and Administrative Review
+
+The request-history records collected by the middleware serve two purposes within Edunexa's security architecture:
+
+**1. Security analysis and investigation**
+
+The collected request data provides information that can be used by the security system to analyze application activity, investigate unusual request patterns and support security-related decisions.
+
+The `userhistory` model maintains information such as user identity, anonymous identifier, request path, HTTP method, URL-resolution status and timestamp.
+
+This data forms part of the security system's activity-history foundation.
+
+**2. Administrative review**
+
+The `security/admin.py` file registers the `userhistory` model with Django Admin.
+
+Administrators can inspect the collected request-history records through the administrative interface.
+
+The current list display includes:
+
+- Record ID.
+- User account.
+- Request path.
+- Date.
+- HTTP method.
+- URL-resolution status.
+
+The administrative interface provides human visibility into the same request-history data that can support security analysis.
+
+**Important distinction:** Django Admin currently provides record inspection. The middleware itself collects the data. Any automated security analysis or decision-making using these records must be documented according to its actual implementation.
+
 
 #  Python Libraries and Dependencies
 
