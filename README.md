@@ -9,6 +9,50 @@
 
 ---
 
+# Edunexa — Development Server Commands
+
+
+### Virtual Environment
+```bash
+source /home/matin/Desktop/Edunexa-/venv/bin/activate
+
+```
+
+### Django 
+```bash
+python manage.py runserver 8001
+```
+
+
+### WebSocket — Daphne 
+```bash
+daphne -b 127.0.0.1 -p 8000 Edunexa.asgi:application
+```
+
+
+### Celery Worker 
+```bash
+celery -A Edunexa worker -l info
+```
+
+### Celery Beat 
+```bash
+celery -A Edunexa beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+```
+
+
+### Redis 
+```bash
+redis-server
+```
+
+### Valkey 
+```bash
+valkey-server
+```
+
+
+
 
 # 1. The Real Goal
 The goal of Edunexa is to explore new concepts, understand how they work, investigate their underlying principles, and apply that knowledge through practical experiments.
