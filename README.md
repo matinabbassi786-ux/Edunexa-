@@ -202,6 +202,105 @@ Understand how lossless compression works, how compression algorithms trade proc
 
 The broader objective is to develop performance-engineering knowledge by measuring actual behaviour rather than selecting configurations based only on theoretical compression ratios.
 
+# 4. Background Tasks, Scheduled Tasks and Caching
+
+## 4.1 Background Tasks — Celery
+
+### Purpose
+
+Celery is used to execute tasks in the background instead of making the user wait for lengthy operations during a normal Django HTTP request.
+
+The objective is to understand how task queues, workers and message brokers work together to execute operations independently of the main request-response process.
+
+### Technologies
+
+| Technology / Library | Version | Purpose |
+|---|---:|---|
+| Celery | 5.7.0 | Background task processing |
+| Kombu | 5.7.0 | Messaging and transport management |
+| billiard | 4.3.2 | Multiprocessing support |
+| Redis | 8.1.0 | Message broker client |
+| Django | 6.0.10 | Application framework |
+
+
+### Learning Objectives
+
+- Background task execution.
+- Task queues and message brokers.
+- Worker processes.
+- Asynchronous processing.
+- Multiprocessing and concurrency.
+- Task registration and discovery.
+- Task execution status.
+- Error handling and retries.
+
+## 4.2 Scheduled Tasks — Celery Beat
+
+### Purpose
+
+Celery Beat is used to schedule background tasks for execution at predefined times or recurring intervals.
+
+The objective is to understand how scheduled operations are triggered automatically and how a scheduler communicates with Celery workers through a message broker.
+
+### Technologies
+
+| Technology / Library | Version | Purpose |
+|---|---:|---|
+| Celery | 5.7.0 | Executes background tasks |
+| django-celery-beat | 2.9.0 | Database-backed periodic task scheduling |
+| Redis | 8.1.0 | Transfers scheduled task messages |
+| Django | 6.0.10 | Application and database integration |
+
+### Learning Objectives
+
+- Periodic task scheduling.
+- Cron-based scheduling.
+- Database-backed schedules.
+- Scheduler and worker communication.
+- Time zones and UTC.
+- Task execution timing.
+- Missed and delayed tasks.
+- Repeated task execution.
+
+
+## 4.3 Caching — Redis
+
+### Purpose
+
+Redis is configured as the Django caching backend.
+
+Caching stores data temporarily so that frequently requested information can be retrieved without repeating the original processing or database operation.
+
+The objective is to understand in-memory data storage, cache retrieval, expiration, invalidation and performance.
+
+### Technologies
+
+| Technology / Library | Version | Purpose |
+|---|---:|---|
+| Redis | 8.1.0 | Python Redis client |
+| django-redis | 7.0.0 | Additional Django Redis integration |
+| Django | 6.0.10 | Built-in caching framework |
+
+
+### Learning Objectives
+
+- In-memory data storage.
+- Cache keys and values.
+- Cache expiration and TTL.
+- Cache hits and misses.
+- Cache invalidation.
+- Data serialization.
+- Memory consumption.
+- Cache consistency.
+- Performance comparison between cached and uncached operations.
+
+## 4.4 Overall Learning Objective
+
+Understand how three different systems cooperate within a Django application:
+
+1. **Celery:** Executes background tasks.
+2. **Celery Beat:** Schedules tasks for execution.
+3. **Redis:** Provides message-broker and caching functionality.
 
 
 #  Python Libraries and Dependencies
