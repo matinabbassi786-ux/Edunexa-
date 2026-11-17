@@ -12,9 +12,9 @@
 # 1. The Real Goal
 The goal of Edunexa is to explore new concepts, understand how they work, investigate their underlying principles, and apply that knowledge through practical experiments.
 
-# WebSocket — Real-Time Communication
+# 2 WebSocket — Real-Time Communication
 
-### 6.1 Purpose
+### 2.1 Purpose
 
 WebSocket is a communication protocol that allows a client and server to maintain a persistent, two-way connection.
 
@@ -23,7 +23,7 @@ Unlike traditional HTTP request-response communication, WebSocket allows both si
 The purpose of studying WebSocket in Edunexa is to understand real-time communication, asynchronous processing, connection management and event-driven architecture.
 
 
-### 6.2 Technologies and Libraries
+### 2.2 Technologies and Libraries
 
 | Technology / Library | Purpose |
 |---|---|
