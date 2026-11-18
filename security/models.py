@@ -21,7 +21,7 @@ class userhistory(models.Model):
 class Wronging(models.Model):
     
     Wronging_link = models.ForeignKey(userhistory,on_delete=models.CASCADE)
-    Wronging = models.SmallIntegerField(validators=[MinValueValidator(-10), MaxValueValidator(10)])
+    Wronging = models.SmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)])
     Wronging_Type = models.CharField(max_length=255)
     Date = models.DateTimeField(auto_now_add=True)
     
