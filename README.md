@@ -466,7 +466,660 @@ The current implementation follows this sequence:
 7. Create an anonymous request-history record using the incoming cookie value.
 8. Return the response.
 
+## 5.8 Police System — Wronging and Security Investigation
 
+### 5.8.1 Overview
+
+The Police System represents the investigation authority within Edunexa's Centralized Security Middleware architecture.
+
+Its main component is the Wronging System.
+
+The Police System receives collected user activity from the `userhistory` model and investigates potentially suspicious events. It evaluates available information and assigns a numerical severity level between 0 and 10.
+
+Its responsibility is to investigate and evaluate events, not to make the final user classification.
+
+### 5.8.2 Data Collection — userhistory
+
+The centralized `SecurityMiddleware` records request information in the `userhistory` model.
+
+The collected information includes:
+
+| Field | Purpose |
+|---|---|
+| `user_names` | Links the record to an authenticated Django user |
+| `User_Type` | Stores the user's type |
+| `User_Code` | Stores a user identifier |
+| `Ip` | Stores the request IP address |
+| `user_agent` | Stores browser or client information |
+| `language` | Stores the request language |
+| `host` | Stores the request host |
+| `method` | Stores the HTTP method |
+| `Path` | Stores the requested path |
+| `path_Short` | Stores a shortened path representation |
+| `found` | Stores whether Django resolved the URL |
+| `Date` | Records the creation date and time |
+
+These records provide historical information for investigating user activity.
+
+### 5.8.3 Wronging System — Event Investigation
+
+The Wronging System investigates collected events using available information, historical activity, and security rules.
+
+Its responsibilities include:
+
+1. Investigating suspicious requests.
+2. Identifying repeated unusual activity.
+3. Evaluating unauthorized access attempts.
+4. Examining relevant historical activity.
+5. Identifying patterns across multiple events.
+6. Assigning an event severity score.
+7. Recording the investigation result.
+
+The investigation should consider the user's permissions and the actual security context. A URL that does not resolve is not automatically an unauthorized access attempt.
+
+### 5.8.4 Wronging Model — Numerical Evaluation
+
+The `Wronging` model stores the investigation result.
+
+| Field | Type | Purpose |
+|---|---|---|
+| `Wronging_link` | ForeignKey | Connects the evaluation to its original `userhistory` record |
+| `Wronging` | SmallIntegerField | Stores the severity level from 0 to 10 |
+| `Wronging_Type` | CharField | Stores the event category |
+| `Date` | DateTimeField | Records the evaluation date and time |
+
+The relationship between `Wronging` and `userhistory` preserves the connection between the original event and its investigation result.
+
+### 5.8.5 Wronging Severity Scale
+
+The Wronging System uses a numerical severity scale from 0 to 10.
+
+| Level | Example interpretation |
+|---:|---|
+| 0 | Normal activity |
+| 1 | Minor unusual activity |
+| 2 | Low-level suspicious activity |
+| 3 | Suspicious or unauthorized activity |
+| 4 | Repeated suspicious activity |
+| 5 | Multiple unusual events |
+| 6 | Significant suspicious activity |
+| 7 | High-severity event |
+| 8 | Very high-severity event |
+| 9 | Critical security event |
+| 10 | Highest severity category |
+
+These levels are an illustrative scoring policy. Actual scoring rules must be defined, tested, and validated.
+
+A severity score is an investigation result, not proof of malicious intent.
+
+### 5.8.6 Example — Unauthorized Administrative Access Attempt
+
+Suppose a student named XYZ attempts to access:
+
+`/admin/home/1/editor`
+
+The middleware records the request. The Police System investigates the event using available evidence and user permissions.
+
+Example investigation result:
+
+| Information | Value |
+|---|---|
+| User | XYZ |
+| User type | Student |
+| Requested path | `/admin/home/1/editor` |
+| Event category | Unauthorized access attempt |
+| Wronging level | 8/10 |
+
+The result is stored in the Wronging model.
+
+Example:
+
+```text
+Wronging: 8
+Wronging_Type: Unauthorized Access Attempt
+```
+
+The investigation result is then provided to the Government System for further analytical evaluation.
+
+A single request or numerical score should not automatically cause a permanent restriction.
+
+### 5.8.7 Connection with the Government System
+
+The Police System provides structured investigation information to the Government System.
+
+The Government System uses this information for further analysis through multiple parties and their individual members.
+
+The Police System does not participate in Government voting and does not directly decide whether a user should be placed on the Whitelist, Graylist, or Blacklist.
+
+### 5.8.8 Police System Responsibilities
+
+1. Collect investigation information from `userhistory`.
+2. Examine suspicious and unusual activity.
+3. Evaluate events using available security evidence.
+4. Assign Wronging severity levels.
+5. Store investigation results.
+6. Maintain a connection between original events and their evaluations.
+7. Provide structured information to the Government System.
+
+---
+
+## 5.9 Government System — Political Parties, Analytical Members and Majority Voting
+
+### 5.9.1 Overview
+
+The Government System represents the analytical and decision-making authority within Edunexa's Centralized Security Middleware architecture.
+
+It receives investigation results from the Police System and evaluates them through multiple parties containing individual analytical members.
+
+The structure is inspired by a parliamentary government.
+
+The Government System contains:
+
+- Multiple parties.
+- Multiple members within each party.
+- Independent analysis by individual members.
+- Individual YES or NO voting.
+- Overall majority-based decision-making.
+
+BJP and Congress are illustrative examples used to explain the party structure. They are not actual political integrations.
+
+### 5.9.2 Government Party Structure
+
+The Government System can contain multiple parties. Each party represents a group of analytical members.
+
+For example:
+
+| Party | Example analytical members |
+|---|---|
+| BJP (example) | Random Forest, Logistic Regression, Linear Regression |
+| Congress (example) | Statistical Model 1, Statistical Model 2, Statistical Model 3 |
+| Probability Party | Probability methods and models |
+| Additional parties | Other analytical methods and models |
+
+The party structure can be expanded with additional analytical authorities as the system develops.
+
+The party is an organizational grouping. It does not cast one collective YES or NO vote.
+
+### 5.9.3 Party Members — Independent Analysis
+
+Each party contains multiple members.
+
+Every member independently analyzes the available investigation information according to its own methodology.
+
+Examples include:
+
+**Machine Learning members**
+- Random Forest
+- Logistic Regression
+- Linear Regression
+- Other machine-learning models
+
+**Statistics members**
+- Statistical analysis methods
+- Distribution analysis
+- Historical trend analysis
+- Other statistical methods
+
+**Probability members**
+- Probability calculations
+- Likelihood estimation
+- Uncertainty analysis
+- Other probability methods
+
+Each member produces an individual analytical result and, when eligible, an individual vote.
+
+### 5.9.4 Individual Member Voting
+
+Each participating member votes independently.
+
+The available voting choices are:
+
+- YES
+- NO
+
+Example:
+
+**Party A — BJP (illustrative example)**
+
+| Member | Analytical method | Vote |
+|---|---|---|
+| Member 1 | Random Forest | YES |
+| Member 2 | Logistic Regression | NO |
+| Member 3 | Linear Regression | YES |
+| Member 4 | Additional ML Model | YES |
+
+**Party B — Congress (illustrative example)**
+
+| Member | Analytical method | Vote |
+|---|---|---|
+| Member 1 | Statistical Method 1 | NO |
+| Member 2 | Statistical Method 2 | NO |
+| Member 3 | Statistical Method 3 | YES |
+| Member 4 | Additional Statistical Method | NO |
+
+Every member's vote is counted individually.
+
+The party does not submit one final YES or NO vote on behalf of all its members.
+
+### 5.9.5 Government-Level Majority Voting
+
+After individual members complete their analysis and voting, the Government System counts all participating members' votes across all parties.
+
+Example:
+
+| Party | YES | NO | Total members |
+|---|---:|---:|---:|
+| BJP | 3 | 1 | 4 |
+| Congress | 1 | 3 | 4 |
+| Probability Party | 3 | 1 | 4 |
+| **Total** | **7** | **5** | **12** |
+
+Government voting result:
+
+- YES: 7
+- NO: 5
+- Total participating members: 12
+
+**Final result: YES wins by majority.**
+
+The result is determined by the total number of individual YES and NO votes, not by counting the number of parties supporting each side.
+
+Every participating member has one vote under this voting model.
+
+### 5.9.6 Majority Rule
+
+The Government System follows an overall majority-based decision process.
+
+| YES votes | NO votes | Result |
+|---:|---:|---|
+| 7 | 3 | YES wins |
+| 6 | 4 | YES wins |
+| 3 | 7 | NO wins |
+| 5 | 5 | Tie |
+
+A tie does not produce a majority decision. The case should be sent for further review or handled through a predefined tie-breaking policy.
+
+The voting system must also define how it handles:
+
+- Abstentions.
+- Unavailable members.
+- Inactive models.
+- Failed analysis.
+- Members that do not submit a vote.
+
+Only valid votes should be included in the YES and NO totals. The system should retain the total number of eligible members and the number of members who actually participated.
+
+### 5.9.7 Linear Regression — Future Value Prediction
+
+Linear Regression can be used as one of the analytical members in the Government System.
+
+Its purpose may include predicting future numerical Wronging values based on historical events.
+
+Example:
+
+| Historical event | Wronging value |
+|---|---:|
+| Event 1 | 2 |
+| Event 2 | 3 |
+| Event 3 | 5 |
+| Event 4 | 6 |
+| Predicted next value | 8 |
+
+The predicted value represents a forecast, not an actual recorded Wronging score.
+
+A predefined decision rule can translate the prediction into a YES or NO vote.
+
+Linear Regression predicts numerical values. It does not independently produce a YES or NO classification without a defined decision rule.
+
+### 5.9.8 Government Decision Workflow
+
+```text
+             POLICE SYSTEM
+             WRONGING RESULT
+                    |
+                    v
+             GOVERNMENT SYSTEM
+                    |
+          +---------+---------+
+          |         |         |
+          v         v         v
+        PARTY A   PARTY B   PARTY C
+          |         |         |
+          v         v         v
+        MEMBERS   MEMBERS   MEMBERS
+          |         |         |
+          v         v         v
+       INDIVIDUAL YES / NO VOTES
+          |         |         |
+          +---------+---------+
+                    |
+                    v
+          COUNT ALL MEMBER VOTES
+                    |
+                    v
+             MAJORITY RESULT
+                    |
+              +-----+-----+
+              |           |
+              v           v
+           YES WINS     NO WINS
+              |           |
+              +-----+-----+
+                    |
+                    v
+           GOVERNMENT DECISION
+                    |
+                    v
+           SUPREME COURT SYSTEM
+```
+
+### 5.9.9 Decision Transparency and Audit History
+
+Every Government decision should maintain an auditable record containing:
+
+- Investigation reference.
+- Party identification.
+- Member identification.
+- Analytical method or model.
+- Model version, where applicable.
+- Individual vote.
+- Supporting analysis or reason.
+- Total YES votes.
+- Total NO votes.
+- Total participating members.
+- Final majority result.
+- Decision timestamp.
+
+This makes the decision process traceable and supports future review.
+
+### 5.9.10 Government System Responsibilities
+
+1. Receive investigation results from the Police System.
+2. Organize analytical members into parties.
+3. Distribute relevant information for analysis.
+4. Allow individual members to analyze independently.
+5. Collect individual YES or NO votes.
+6. Count votes across all participating parties.
+7. Determine the overall majority.
+8. Handle ties and unavailable members according to defined rules.
+9. Record voting history and supporting analysis.
+10. Forward the Government decision to the Supreme Court System.
+
+The Government System performs analytical evaluation and majority voting. It does not directly apply the final user classification.
+
+---
+
+## 5.10 Supreme Court System — Final Classification and Access Control
+
+### 5.10.1 Overview
+
+The Supreme Court System represents the final classification and enforcement authority within Edunexa's architecture.
+
+It receives the Government System's majority decision and processes the result according to the application's security policies.
+
+Its main responsibility is to determine and apply the appropriate user classification.
+
+The Supreme Court is an architectural analogy for the final application-level authority. It is not a real-world court.
+
+### 5.10.2 User Classification System
+
+The Supreme Court System manages three primary classifications.
+
+#### 1. Whitelist — Trusted Users
+
+Whitelist represents users who are considered trusted under the applicable security policy.
+
+Possible effects:
+
+- Normal access according to account permissions.
+- No additional restrictions from this classification.
+- Continued security monitoring where required.
+
+#### 2. Graylist — Monitored Users
+
+Graylist represents users who require additional monitoring or review.
+
+Possible effects:
+
+- Additional security checks.
+- Restricted access to selected features.
+- Continued activity monitoring.
+- Review when new evidence becomes available.
+
+#### 3. Blacklist — Restricted or Blocked Users
+
+Blacklist represents users who have been classified as high-risk under the applicable security policy.
+
+Possible effects:
+
+- Blocking access to protected application areas.
+- Restricting account activity.
+- Preventing access until the required review or appeal process is completed.
+
+In the architecture's analogy, the Blacklist represents a jail or restricted state within the application. It is not a real-world criminal conviction.
+
+### 5.10.3 Classification Process
+
+Suppose the Government System completes its voting process and produces a majority decision recommending that XYZ be placed on the Blacklist.
+
+The Supreme Court System:
+
+1. Receives the Government decision.
+2. Checks the decision and its supporting information.
+3. Processes the result according to the classification policy.
+4. Determines the applicable user classification.
+5. Records the classification.
+6. Enforces the relevant access restrictions.
+7. Notifies the President (Super Admin) for oversight.
+
+### 5.10.4 Classification History
+
+The system should maintain a record of:
+
+- User identification.
+- Previous classification.
+- New classification.
+- Reason for the change.
+- Related Government decision.
+- Supporting evidence.
+- Date and time.
+- Enforcement status.
+- Later reviews or modifications.
+
+This makes classification changes traceable.
+
+### 5.10.5 Supreme Court Responsibilities
+
+1. Receive and process Government decisions.
+2. Apply Whitelist, Graylist, or Blacklist classifications.
+3. Enforce access restrictions according to the classification.
+4. Maintain classification history.
+5. Notify the President (Super Admin).
+6. Support authorized review and changes.
+
+The Supreme Court System is the final application-level classification and enforcement authority.
+
+---
+
+## 5.11 President System — Super Admin and Human Oversight
+
+### 5.11.1 Overview
+
+The President represents the Super Admin authority in Edunexa's architecture.
+
+Unlike the Police System and Government System, the President is not an AI model, analytical party, or voting member.
+
+The President is a real human administrator who can observe the system's decisions and intervene when necessary.
+
+The purpose of this layer is to provide human oversight over automated analysis and classification.
+
+### 5.11.2 Super Admin Dashboard
+
+The President (Super Admin) can review information from the security architecture, including:
+
+- User classifications.
+- Whitelist records.
+- Graylist records.
+- Blacklist records.
+- Police investigation results.
+- Wronging severity levels.
+- Government analytical results.
+- Party and member information.
+- Individual member votes.
+- Government majority results.
+- Supreme Court decisions.
+- Classification history.
+
+This provides visibility into how a decision was reached.
+
+### 5.11.3 Notifications and Human Review
+
+When the Supreme Court System applies an important classification, the President receives a notification.
+
+For example:
+
+1. The Police System investigates XYZ's activity.
+2. The Government System analyzes the evidence.
+3. Individual members vote YES or NO.
+4. The Government System calculates the overall majority.
+5. The Supreme Court System processes the decision and places XYZ on the Blacklist.
+6. The President receives a notification.
+7. The President can inspect the investigation, analysis, voting history, and classification.
+
+### 5.11.4 Human Modification and Override
+
+The President can change a classification when a review shows that a correction is necessary.
+
+Possible changes include:
+
+- Blacklist to Graylist.
+- Graylist to Whitelist.
+- Whitelist to Graylist.
+- Other authorized classification changes.
+
+Every modification should record:
+
+- Administrator identification.
+- Previous classification.
+- New classification.
+- Reason for modification.
+- Date and time.
+
+The President does not need to participate in the Government's automated voting process. The President provides a separate human oversight and correction mechanism.
+
+### 5.11.5 President Responsibilities
+
+1. Monitor important security decisions.
+2. Review Government voting results.
+3. Inspect Supreme Court classifications.
+4. Receive notifications.
+5. Examine supporting evidence.
+6. Correct classifications when necessary.
+7. Maintain human oversight.
+8. Ensure administrative changes are recorded and auditable.
+
+### 5.11.6 Human Oversight Principle
+
+Automated systems provide analysis and recommendations, but the Super Admin retains the ability to review and correct decisions when necessary.
+
+This creates a human-supervised security architecture rather than a system that relies entirely on automated decisions.
+
+---
+
+## 5.12 Complete Centralized Security Decision Workflow
+
+The following diagram represents the complete architecture.
+
+```text
+                       USER REQUEST
+                            |
+                            v
+              CENTRALIZED SECURITY MIDDLEWARE
+                            |
+                            v
+                       userhistory
+                            |
+                            v
+                  5.8 POLICE SYSTEM
+                    WRONGING SYSTEM
+                            |
+                            v
+                   EVENT INVESTIGATION
+                            |
+                            v
+                   WRONGING LEVEL 0–10
+                            |
+                            v
+                5.9 GOVERNMENT SYSTEM
+                            |
+              +-------------+-------------+
+              |             |             |
+              v             v             v
+           PARTY A        PARTY B       PARTY C
+           (BJP)         (Congress)   (Probability)
+              |             |             |
+              v             v             v
+           MEMBERS        MEMBERS       MEMBERS
+              |             |             |
+              v             v             v
+         INDIVIDUAL YES / NO VOTES
+              |             |             |
+              +-------------+-------------+
+                            |
+                            v
+                  COUNT ALL MEMBER VOTES
+                            |
+                            v
+                     OVERALL MAJORITY
+                            |
+                            v
+                  GOVERNMENT DECISION
+                            |
+                            v
+                5.10 SUPREME COURT SYSTEM
+                            |
+                            v
+                   USER CLASSIFICATION
+                            |
+               +------------+------------+
+               |            |            |
+               v            v            v
+           WHITELIST     GRAYLIST    BLACKLIST
+               |            |            |
+               +------------+------------+
+                            |
+                            v
+                  5.11 PRESIDENT SYSTEM
+                     SUPER ADMIN
+                            |
+                            v
+                   HUMAN REVIEW
+                            |
+                            v
+                AUTHORIZED MODIFICATION
+                    WHEN REQUIRED
+```
+
+### Architecture Summary
+
+| Section | Authority | Main responsibility |
+|---|---|---|
+| 5.8 | Police | Investigate events and assign Wronging severity |
+| 5.9 | Government | Organize parties and members, collect individual votes, and determine the overall majority |
+| 5.10 | Supreme Court | Apply user classifications and access restrictions |
+| 5.11 | President | Human oversight, review, and authorized classification changes |
+
+### Important Architectural Principles
+
+1. Every decision should be traceable to its original event and supporting evidence.
+2. Each Government member votes individually; parties do not cast collective votes.
+3. The Government's overall decision is determined by the majority of participating members across all parties.
+4. Model predictions must be distinguished from actual recorded event values.
+5. A Wronging score or model vote alone does not establish malicious intent.
+6. Serious restrictions should support human review and an appropriate correction or appeal process.
+7. The President is a real human Super Admin, not an automated decision-making member.
+8. Every classification and administrative modification should maintain an audit history.
+   
 
 
 #  Python Libraries and Dependencies
